@@ -1,46 +1,62 @@
 <template>
   <v-container>
-    <v-expansion-panels :value="0">
+    <v-expansion-panels :value="expensionPanelOpen">
       <v-expansion-panel>
         <v-expansion-panel-header class="justify-self-start">
-          <v-tooltip bottom>
+          <v-dialog v-model="dialog_helpSearchSimple" width="600" scrollable>
             <template v-slot:activator="{ on, attrs }">
-              <div v-bind="attrs" v-on="on">
-                <v-icon left>mdi-magnify</v-icon>
-                <span>SUCHEN: Einfache Suche</span>
-                <sup>
-                  <v-icon left small style="margin-left:5px">
-                    mdi-information-outline
-                  </v-icon>
-                </sup>
+              <div v-bind="attrs" v-on="on" style="float:right; display:block;">
+                <div style="display:block; float:left">
+                  <v-icon @click="stopClickSimple" left>mdi-magnify</v-icon>
+                  <span @click="stopClickSimple">SUCHEN: Einfache Suche</span>
+                  <sup>
+                    <v-icon left small style="margin-left:5px">
+                      mdi-information-outline
+                    </v-icon>
+                  </sup>
+                </div>
+                <div style="display:block; width:100%; height:20px;" @click="stopClickSimple"></div>
               </div>
             </template>
-            <span>
-              Die "Einfache Suche" nach N-Grammen umfasst folgende
-              Funktionalitäten:
-              <ul>
-                <li>
-                  <strong>Unterschiedliche N-Gramm-Längen von 1-3</strong>
-                  <br />
-                  z. B. N=1: Virus, N=2: zweite Welle, N=3: Bundeskanzlerin
-                  Angela Merkel
-                </li>
-                <li>
-                  <strong>Suche nach Grammen</strong> <br />
-                  z. B. bayer (exakte Suche), bayer* (Prefix - z. B. bayern),
-                  *bayer (Suffix - z. B. nordbayer) <br />
-                  oder *bayer* (beliebige Position - z. B. nordbayern)
-                </li>
-                <li>
-                  <strong>Verschiedene Annotationsebenen</strong> <br />
-                  Wortform, Lemma oder POS (Part-of-Speech &rarr; Wortart).<br />
-                  Bsp.: 2-Gram: ADJ* Merkel, 3-Gram: ART unglaublich NN
-                </li>
-              </ul>
-              Hinweis: Abfragen und Ergebnisse werden immer zur Kleinschreibung
-              reduziert.
-            </span>
-          </v-tooltip>
+            <v-card>
+              <v-card-title class="headline grey lighten-2">
+                HILFE: Einfache Suche
+              </v-card-title>
+              <v-divider></v-divider>
+              <v-card-text>
+                <span>
+                  Die "Einfache Suche" nach N-Grammen umfasst folgende Funktionalitäten:<br/> <br/>
+                  <ul>
+                    <li>
+                      <strong>Unterschiedliche N-Gramm-Längen von 1-3</strong>
+                      <br />
+                      z. B. N=1: Virus, N=2: zweite Welle, N=3: Bundeskanzlerin Angela Merkel
+                    </li>
+                    <li>
+                      <strong>Suche nach Grammen</strong> <br />
+                      z. B. bayer (exakte Suche), bayer* (Prefix - z. B. bayern), *bayer (Suffix - z. B. nordbayer)
+                      <br />
+                      oder *bayer* (beliebige Position - z. B. nordbayern)
+                    </li>
+                    <li>
+                      <strong>Verschiedene Annotationsebenen</strong> <br />
+                      Wortform, Lemma oder POS (Part-of-Speech &rarr; Wortart).<br />
+                      Bsp.: 2-Gram: ADJ* Merkel, 3-Gram: ART unglaublich NN
+                    </li>
+                  </ul>
+                  <br/>
+                  <i>Hinweis:</i> Abfragen und Ergebnisse werden immer zur Kleinschreibung reduziert.
+                </span>
+              </v-card-text>
+              <v-divider></v-divider>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="primary" text @click="dialog_helpSearchSimple = false">
+                  Fenster schließen
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <v-row>
@@ -71,9 +87,11 @@
                           :items="layer"
                           v-model="search_simple_1_layer"
                           label="Layer"
+                          style="display:block-inline;"
                         ></v-overflow-btn>
+                        <TagsetInfo v-if="search_simple_1_layer === 'POS'" />
                       </v-col>
-                      <v-col cols="10" style="margin-top:7px">
+                      <v-col cols="9" style="margin-top:7px">
                         <v-text-field
                           label="Suchausdruck (einzelnes Token)..."
                           v-model="search_simple_1_value"
@@ -88,17 +106,11 @@
                           <h5>Beispiele:</h5>
                           <div class="sampleSection">
                             <ul>
-                              <li
-                                v-for="item in this.$config.sample_simple_1"
-                                :key="item.label"
-                              >
+                              <li v-for="item in this.$config.sample_simple_1" :key="item.label">
                                 <a
                                   v-on:click="
                                     sample_simple_click(item.query, [
-                                      [
-                                        'search_simple_1_layer',
-                                        'search_simple_1_value',
-                                      ],
+                                      ['search_simple_1_layer', 'search_simple_1_value'],
                                     ]);
                                     search_simple();
                                   "
@@ -127,6 +139,7 @@
                           v-model="search_simple_1_layer"
                           label="Layer"
                         ></v-overflow-btn>
+                        <TagsetInfo v-if="search_simple_1_layer === 'POS'" />
                       </v-col>
                       <v-col cols="4">
                         <v-text-field
@@ -143,6 +156,7 @@
                           v-model="search_simple_2_layer"
                           label="Layer"
                         ></v-overflow-btn>
+                        <TagsetInfo v-if="search_simple_2_layer === 'POS'" />
                       </v-col>
                       <v-col cols="4">
                         <v-text-field
@@ -160,21 +174,12 @@
                           <h5>Beispiele:</h5>
                           <div class="sampleSection">
                             <ul>
-                              <li
-                                v-for="item in this.$config.sample_simple_2"
-                                :key="item.label"
-                              >
+                              <li v-for="item in this.$config.sample_simple_2" :key="item.label">
                                 <a
                                   v-on:click="
                                     sample_simple_click(item.query, [
-                                      [
-                                        'search_simple_1_layer',
-                                        'search_simple_1_value',
-                                      ],
-                                      [
-                                        'search_simple_2_layer',
-                                        'search_simple_2_value',
-                                      ],
+                                      ['search_simple_1_layer', 'search_simple_1_value'],
+                                      ['search_simple_2_layer', 'search_simple_2_value'],
                                     ]);
                                     search_simple();
                                   "
@@ -203,6 +208,7 @@
                           v-model="search_simple_1_layer"
                           label="Layer"
                         ></v-overflow-btn>
+                        <TagsetInfo v-if="search_simple_1_layer === 'POS'" />
                       </v-col>
                       <v-col cols="2">
                         <v-text-field
@@ -219,6 +225,7 @@
                           v-model="search_simple_2_layer"
                           label="Layer"
                         ></v-overflow-btn>
+                        <TagsetInfo v-if="search_simple_2_layer === 'POS'" />
                       </v-col>
                       <v-col cols="2">
                         <v-text-field
@@ -235,6 +242,7 @@
                           v-model="search_simple_3_layer"
                           label="Layer"
                         ></v-overflow-btn>
+                        <TagsetInfo v-if="search_simple_3_layer === 'POS'" />
                       </v-col>
                       <v-col cols="2">
                         <v-text-field
@@ -252,25 +260,13 @@
                           <h5>Beispiele:</h5>
                           <div class="sampleSection">
                             <ul>
-                              <li
-                                v-for="item in this.$config.sample_simple_3"
-                                :key="item.label"
-                              >
+                              <li v-for="item in this.$config.sample_simple_3" :key="item.label">
                                 <a
                                   v-on:click="
                                     sample_simple_click(item.query, [
-                                      [
-                                        'search_simple_1_layer',
-                                        'search_simple_1_value',
-                                      ],
-                                      [
-                                        'search_simple_2_layer',
-                                        'search_simple_2_value',
-                                      ],
-                                      [
-                                        'search_simple_3_layer',
-                                        'search_simple_3_value',
-                                      ],
+                                      ['search_simple_1_layer', 'search_simple_1_value'],
+                                      ['search_simple_2_layer', 'search_simple_2_value'],
+                                      ['search_simple_3_layer', 'search_simple_3_value'],
                                     ]);
                                     search_simple();
                                   "
@@ -288,9 +284,15 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col>
+            <v-col cols="5">
+              <v-btn block @click="delete_simple">
+                <v-icon style="color:#c00">mdi-delete-circle-outline</v-icon>Alle Eingaben löschen</v-btn
+              >
+            </v-col>
+            <v-col cols="2"> </v-col>
+            <v-col cols="5">
               <v-btn block @click="search_simple">
-                <v-icon>mdi-magnify</v-icon>Suche ausführen
+                <v-icon style="color:#1976d2">mdi-magnify</v-icon>Suche ausführen
               </v-btn>
             </v-col>
           </v-row>
@@ -298,43 +300,61 @@
       </v-expansion-panel>
       <v-expansion-panel>
         <v-expansion-panel-header class="justify-self-start">
-          <v-tooltip bottom>
+          <v-dialog v-model="dialog_helpSearchComplex" width="600" scrollable>
             <template v-slot:activator="{ on, attrs }">
-              <div v-bind="attrs" v-on="on">
-                <v-icon left>mdi-magnify</v-icon>
-                <span>SUCHEN: Erweiterte Tiefen-Suche</span>
-                <sup>
-                  <v-icon left small style="margin-left:5px">
-                    mdi-information-outline
-                  </v-icon>
-                </sup>
+              <div v-bind="attrs" v-on="on" style="float:right; display:block;">
+                <div style="float:left; display:block;">
+                  <v-icon @click="stopClickComplex" left>mdi-magnify</v-icon>
+                  <span @click="stopClickComplex">SUCHEN: Erweiterte Tiefen-Suche</span>
+                  <a @click="dialog = true">
+                    <sup>
+                      <v-icon left small style="margin-left:5px">
+                        mdi-information-outline
+                      </v-icon>
+                    </sup>
+                  </a>
+                </div>
+                <div style="display:block; width:100%; height:20px;" @click="stopClickComplex"></div>
               </div>
             </template>
-            <span>
-              Die "Erweiterte Tiefen-Suche" bietet folgende Zusatzfunktionalität
-              (Basis-Funktionen siehe: "Einfache Suche"):
-              <ul>
-                <li>
-                  <strong
-                    >Gleichzeitige Suche auf mehreren Annotationsebenen</strong
-                  >
-                  <br />
-                  Wortform und/oder Lemma und/oder POS (Part-of-Speech &rarr;
-                  Wortart).<br />
-                  Bsp. 1.: 1-Gram: 1. Lemma = gut* &amp; 1. POS = ADJ*<br />
-                  Bsp. 2.: 2-Gram: 1. Lemma = gefährlich &amp; 2. Lemma = Virus
-                  &amp; 2. POS = NN
-                </li>
-              </ul>
-              Hinweis: Abfragen und Ergebnisse werden immer zur Kleinschreibung
-              reduziert.
-            </span>
-          </v-tooltip>
+            <v-card>
+              <v-card-title class="headline grey lighten-2">
+                HILFE: Erweiterte Tiefen-Suche
+              </v-card-title>
+              <v-divider></v-divider>
+              <v-card-text>
+                <span>
+                  Die "Erweiterte Tiefen-Suche" bietet folgende Zusatzfunktionalität<br />(Basis-Funktionen siehe:
+                  "Einfache Suche"):<br/> <br/>
+                  <ul>
+                    <li>
+                      <strong>Gleichzeitige Suche auf mehreren Annotationsebenen</strong>
+                      <br />
+                      Wortform und/oder Lemma und/oder POS (Part-of-Speech &rarr; Wortart).<br />
+                      Bsp. 1.: 1-Gram: 1. Lemma = gut* &amp; 1. POS = ADJ*<br />
+                      Bsp. 2.: 2-Gram: 1. Lemma = gefährlich &amp; 2. Lemma = Virus &amp; 2. POS = NN
+                    </li>
+                  </ul>
+                  <br/>
+                  <i>Hinweis:</i> Abfragen und Ergebnisse werden immer zur Kleinschreibung reduziert.
+                </span>
+              </v-card-text>
+              <v-divider></v-divider>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="primary" text @click="dialog_helpSearchComplex = false">
+                  Fenster schließen
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <v-row>
             <v-col>
-              <h5>Suchfenstergröße:</h5>
+              <div>
+                <h5>Suchfenstergröße:</h5>
+              </div>
               <v-tabs>
                 <v-tab @click="search_complex_n_change(1)">
                   <span>N=1</span>
@@ -388,6 +408,7 @@
                           :rules="inputRules"
                           @keydown.enter="search_complex"
                         ></v-text-field>
+                        <TagsetInfo />
                       </v-col>
                     </v-row>
 
@@ -397,16 +418,10 @@
                           <h5>Beispiele:</h5>
                           <div class="sampleSection">
                             <ul>
-                              <li
-                                v-for="item in this.$config.sample_complex_1"
-                                :key="item.label"
-                              >
+                              <li v-for="item in this.$config.sample_complex_1" :key="item.label">
                                 <a
                                   v-on:click="
-                                    sample_complex_click(
-                                      item.query,
-                                      'search_complex_1_'
-                                    );
+                                    sample_complex_click(item.query, 'search_complex_1_');
                                     search_complex();
                                   "
                                   >{{ item.label }}</a
@@ -482,6 +497,7 @@
                           :rules="inputRules"
                           @keydown.enter="search_complex"
                         ></v-text-field>
+                        <TagsetInfo />
                       </v-col>
                       <v-col>
                         <v-text-field
@@ -490,6 +506,7 @@
                           :rules="inputRules"
                           @keydown.enter="search_complex"
                         ></v-text-field>
+                        <TagsetInfo />
                       </v-col>
                     </v-row>
                     <v-row>
@@ -498,16 +515,10 @@
                           <h5>Beispiele:</h5>
                           <div class="sampleSection">
                             <ul>
-                              <li
-                                v-for="item in this.$config.sample_complex_2"
-                                :key="item.label"
-                              >
+                              <li v-for="item in this.$config.sample_complex_2" :key="item.label">
                                 <a
                                   v-on:click="
-                                    sample_complex_click(
-                                      item.query,
-                                      'search_complex_2_'
-                                    );
+                                    sample_complex_click(item.query, 'search_complex_2_');
                                     search_complex();
                                   "
                                   >{{ item.label }}</a
@@ -604,6 +615,7 @@
                           :rules="inputRules"
                           @keydown.enter="search_complex"
                         ></v-text-field>
+                        <TagsetInfo />
                       </v-col>
                       <v-col>
                         <v-text-field
@@ -612,6 +624,7 @@
                           :rules="inputRules"
                           @keydown.enter="search_complex"
                         ></v-text-field>
+                        <TagsetInfo />
                       </v-col>
                       <v-col>
                         <v-text-field
@@ -620,6 +633,7 @@
                           :rules="inputRules"
                           @keydown.enter="search_complex"
                         ></v-text-field>
+                        <TagsetInfo />
                       </v-col>
                     </v-row>
 
@@ -629,16 +643,10 @@
                           <h5>Beispiele:</h5>
                           <div class="sampleSection">
                             <ul>
-                              <li
-                                v-for="item in this.$config.sample_complex_3"
-                                :key="item.label"
-                              >
+                              <li v-for="item in this.$config.sample_complex_3" :key="item.label">
                                 <a
                                   v-on:click="
-                                    sample_complex_click(
-                                      item.query,
-                                      'search_complex_3_'
-                                    );
+                                    sample_complex_click(item.query, 'search_complex_3_');
                                     search_complex();
                                   "
                                   >{{ item.label }}</a
@@ -655,9 +663,15 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col>
+            <v-col cols="5">
+              <v-btn block @click="delete_complex">
+                <v-icon style="color:#c00">mdi-delete-circle-outline</v-icon>Alle Eingaben löschen</v-btn
+              >
+            </v-col>
+            <v-col cols="2"> </v-col>
+            <v-col cols="5">
               <v-btn block @click="search_complex">
-                <v-icon>mdi-magnify</v-icon>Suche ausführen</v-btn
+                <v-icon style="color:#1976d2">mdi-magnify</v-icon>Suche ausführen</v-btn
               >
             </v-col>
           </v-row>
@@ -707,6 +721,7 @@
 
 <script>
 import { mdiMagnifyPlus } from "@mdi/js";
+import TagsetInfo from "./TagsetInfo";
 
 var global_layers = ["Wortform", "Lemma", "POS"];
 var config;
@@ -733,18 +748,11 @@ class queryItem {
   constructor(layer, position, element, upperCase) {
     this.layer = layer;
     this.position = position;
-    this.token = upperCase ? element.toUpperCase() : element.toLowerCase();
+    this.token = (upperCase ? element.toUpperCase() : element.toLowerCase()).trim();
   }
 
   toString() {
-    return (
-      "[" +
-      (this.position + 1) +
-      ". " +
-      global_layers[this.layer] +
-      "] = " +
-      this.token
-    );
+    return "[" + (this.position + 1) + ". " + global_layers[this.layer] + "] = " + this.token;
   }
 }
 
@@ -771,11 +779,7 @@ async function sendSearchRequest(data, store, n, queryItems) {
       }
     })
     .then((searchResult) => {
-      if (
-        searchResult === null ||
-        searchResult.Items === null ||
-        searchResult.Items.length === 0
-      ) {
+      if (searchResult === null || searchResult.Items === null || searchResult.Items.length === 0) {
         data.snackbar = true;
         data.progressError = "Keine Ergebnisse - Abfrage zu spezifisch.";
         data.progressWait = false;
@@ -827,6 +831,11 @@ async function sendSearchRequest(data, store, n, queryItems) {
             data.progressMsg = `Lade Zeitreihe(n): ${done} von ${searchResult.Items.length}`;
 
             if (done === searchResult.Items.length) {
+              if (!data.progressWait) {
+                error = true;
+                return;
+              }
+
               data.progressMsg = "Visualisiere die Daten";
               store.commit("search", {
                 n: n,
@@ -846,9 +855,15 @@ async function sendSearchRequest(data, store, n, queryItems) {
 
 export default {
   name: "Search",
-
+  components: {
+    TagsetInfo,
+  },
   data: () => {
     return {
+      dialog_helpSearchSimple: false,
+      dialog_helpSearchComplex: false,
+      expensionPanelOpen: 0,
+
       layer: global_layers,
       search_simple_1_layer: "Wortform",
       search_simple_2_layer: "Wortform",
@@ -891,14 +906,18 @@ export default {
           if (v === undefined) return true;
           return (
             (v.toString().match("\\s") || []).length < 1 ||
-            "Nur einzelne Token erlaubt!"
+            "Pro Suchfeld ist nur ein Token erlaubt. Wenn Sie nach N-Grammen suchen möchten, erhöhen Sie die Suchfenstergröße - z. B. auf N=2 oder N=3 (siehe oben)"
           );
         },
         function(v) {
           if (v === undefined) return true;
+          return (v.toString().match("[\\*]") || []).length < 3 || "Pro Suchfeld können Sie maximal zwei * verwenden.";
+        },
+        function(v) {
+          if (v === undefined) return true;
           return (
-            (v.toString().match("[\\*]") || []).length < 3 ||
-            "Es sind maximal zwei *-Auslassungszeichen erlaubt!"
+            (v.toString().match("\\.\\*") || []).length < 1 ||
+            "Bitte verwenden Sie anstelle von '.*' nur '*' - OWIDplusLIVE unterstützt nur einfache Abfragen."
           );
         },
       ],
@@ -908,6 +927,39 @@ export default {
     config = this.$config;
   },
   methods: {
+    delete_simple: function() {
+      this.search_simple_1_value = "";
+      this.search_simple_2_value = "";
+      this.search_simple_3_value = "";
+    },
+    delete_complex: function() {
+      this.search_complex_1_1_w = "";
+      this.search_complex_1_1_l = "";
+      this.search_complex_1_1_p = "";
+      this.search_complex_2_1_w = "";
+      this.search_complex_2_1_l = "";
+      this.search_complex_2_1_p = "";
+      this.search_complex_2_2_w = "";
+      this.search_complex_2_2_l = "";
+      this.search_complex_2_2_p = "";
+      this.search_complex_3_1_w = "";
+      this.search_complex_3_1_l = "";
+      this.search_complex_3_1_p = "";
+      this.search_complex_3_2_w = "";
+      this.search_complex_3_2_l = "";
+      this.search_complex_3_2_p = "";
+      this.search_complex_3_3_w = "";
+      this.search_complex_3_3_l = "";
+      this.search_complex_3_3_p = "";
+    },
+    stopClickSimple: function(e) {
+      e.stopPropagation();
+      this.expensionPanelOpen = 0;
+    },
+    stopClickComplex: function(e) {
+      e.stopPropagation();
+      this.expensionPanelOpen = 1;
+    },
     abortProgress: function() {
       this.$data.progressWait = false;
     },
@@ -926,7 +978,7 @@ export default {
       for (let i = 0; i < query.length; i++) {
         const position = query[i];
         Object.keys(position).forEach((key) => {
-          this.$data[controlIdTemplate + (i + 1) + "_" + key[0].toLowerCase()] = position[key];          
+          this.$data[controlIdTemplate + (i + 1) + "_" + key[0].toLowerCase()] = position[key];
         });
       }
     },
@@ -948,6 +1000,7 @@ export default {
 
       this.$store.state.owid.N = set.size;
 
+      this.$emit("searchRequestSubmitted");
       sendSearchRequest(this.$data, this.$store, set.size, qs);
     },
     search_simple: function() {
@@ -978,12 +1031,8 @@ export default {
           )
         );
 
-      sendSearchRequest(
-        this.$data,
-        this.$store,
-        this.$data.search_simple_n,
-        queryItems
-      );
+      this.$emit("searchRequestSubmitted");
+      sendSearchRequest(this.$data, this.$store, this.$data.search_simple_n, queryItems);
     },
     search_complex: function() {
       var queryItems = [];
@@ -1016,17 +1065,11 @@ export default {
         ];
       }
 
-      sendSearchRequest(
-        this.$data,
-        this.$store,
-        this.$data.search_complex_n,
-        queryItems
-      );
+      this.$emit("searchRequestSubmitted");
+      sendSearchRequest(this.$data, this.$store, this.$data.search_complex_n, queryItems);
     },
     validate_notEmpty: function(value) {
-      return value === "" || value == "*"
-        ? "Das Feld darf nicht leer sein."
-        : true;
+      return value === "" || value == "*" ? "Das Feld darf nicht leer sein." : true;
     },
   },
 };

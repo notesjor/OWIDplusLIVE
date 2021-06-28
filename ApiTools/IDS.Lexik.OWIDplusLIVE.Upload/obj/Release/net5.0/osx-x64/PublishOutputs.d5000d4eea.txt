@@ -1,0 +1,9 @@
+C:\Projekte\IDS\IDS.Lexik.cOWIDplusViewer.v2\IDS.Lexik.OWIDplusLIVE.Upload\publish\macos\IDS.Lexik.OWIDplusLIVE.Upload.pdb
+C:\Projekte\IDS\IDS.Lexik.cOWIDplusViewer.v2\IDS.Lexik.OWIDplusLIVE.Upload\publish\macos\libSystem.IO.Compression.Native.dylib
+C:\Projekte\IDS\IDS.Lexik.cOWIDplusViewer.v2\IDS.Lexik.OWIDplusLIVE.Upload\publish\macos\libSystem.Native.dylib
+C:\Projekte\IDS\IDS.Lexik.cOWIDplusViewer.v2\IDS.Lexik.OWIDplusLIVE.Upload\publish\macos\libSystem.Net.Security.Native.dylib
+C:\Projekte\IDS\IDS.Lexik.cOWIDplusViewer.v2\IDS.Lexik.OWIDplusLIVE.Upload\publish\macos\libSystem.Security.Cryptography.Native.Apple.dylib
+C:\Projekte\IDS\IDS.Lexik.cOWIDplusViewer.v2\IDS.Lexik.OWIDplusLIVE.Upload\publish\macos\libSystem.Security.Cryptography.Native.OpenSsl.dylib
+C:\Projekte\IDS\IDS.Lexik.cOWIDplusViewer.v2\IDS.Lexik.OWIDplusLIVE.Upload\publish\macos\libclrjit.dylib
+C:\Projekte\IDS\IDS.Lexik.cOWIDplusViewer.v2\IDS.Lexik.OWIDplusLIVE.Upload\publish\macos\libcoreclr.dylib
+C:\Projekte\IDS\IDS.Lexik.cOWIDplusViewer.v2\IDS.Lexik.OWIDplusLIVE.Upload\publish\macos\IDS.Lexik.OWIDplusLIVE.Upload

@@ -45,16 +45,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Elasticsearch.Net, Version=7.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
-      <HintPath>..\..\..\CorpusExplorerV2\CorpusExplorer\packages\Elasticsearch.Net.7.11.1\lib\net461\Elasticsearch.Net.dll</HintPath>
+      <HintPath>..\..\..\CorpusExplorerV2\CorpusExplorer\packages\Elasticsearch.Net.7.12.1\lib\net461\Elasticsearch.Net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.OpenApi, Version=1.2.3.0, Culture=neutral, PublicKeyToken=3f5743946376f042, processorArchitecture=MSIL">
       <HintPath>..\..\..\CorpusExplorerV2\CorpusExplorer\packages\Microsoft.OpenApi.1.2.3\lib\net46\Microsoft.OpenApi.dll</HintPath>
     </Reference>
     <Reference Include="Nest, Version=7.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
-      <HintPath>..\..\..\CorpusExplorerV2\CorpusExplorer\packages\NEST.7.11.1\lib\net461\Nest.dll</HintPath>
+      <HintPath>..\..\..\CorpusExplorerV2\CorpusExplorer\packages\NEST.7.12.1\lib\net461\Nest.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\..\CorpusExplorerV2\CorpusExplorer\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\..\CorpusExplorerV2\CorpusExplorer\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="RocksDbSharp, Version=6.2.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\CorpusExplorerV2\CorpusExplorer\packages\RocksDbSharp.6.2.2\lib\net45\RocksDbSharp.dll</HintPath>

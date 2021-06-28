@@ -4,11 +4,11 @@ import vuetify from "./plugins/vuetify";
 import store from "./store";
 import VueMeta from 'vue-meta'
 import i18n from './i18n'
-import VueI18n from 'vue-i18n'
-
-Vue.use(VueI18n)
 
 Vue.config.productionTip = false;
+Vue.config.performance = false;
+var VueCookie = require('vue-cookie');
+Vue.use(VueCookie);
 Vue.use(VueMeta);
 
 fetch(process.env.BASE_URL + "config.json")

@@ -15,25 +15,12 @@
 import * as echarts from "echarts";
 
 var monthMap = {
-  nameMap: [
-    "JAN",
-    "FEB",
-    "MÄR",
-    "APR",
-    "MAI",
-    "JUN",
-    "JUL",
-    "AUG",
-    "SEP",
-    "OKT",
-    "NOV",
-    "DEZ",
-  ],
+  nameMap: null,
 };
 
 var dayMap = {
   firstDay: 1,
-  nameMap: ["So.", "Mo.", "Di.", "Mi.", "Do.", "Fr.", "Sa."],
+  nameMap: null,
 };
 
 export default {
@@ -45,12 +32,37 @@ export default {
     };
   },
   created() {
+    monthMap.nameMap = [
+      this.$t("lbl_month_short_january"),
+      this.$t("lbl_month_short_february"),
+      this.$t("lbl_month_short_march"),
+      this.$t("lbl_month_short_april"),
+      this.$t("lbl_month_short_may"),
+      this.$t("lbl_month_short_june"),
+      this.$t("lbl_month_short_july"),
+      this.$t("lbl_month_short_august"),
+      this.$t("lbl_month_short_september"),
+      this.$t("lbl_month_short_october"),
+      this.$t("lbl_month_short_november"),
+      this.$t("lbl_month_short_december"),
+    ];
+    dayMap.nameMap = [
+      this.$t("lbl_weekday_short_monday"),
+      this.$t("lbl_weekday_short_tuesday"),
+      this.$t("lbl_weekday_short_wednesday"),
+      this.$t("lbl_weekday_short_thursday"),
+      this.$t("lbl_weekday_short_friday"),
+      this.$t("lbl_weekday_short_saturday"),
+      this.$t("lbl_weekday_short_sunday"),
+    ];
+    dayMap.firstDay = parseInt(this.$t("lbl_weekday_firstIndex"));
+
     this.$store.watch(
       () => {
         return this.$store.state.version;
       },
       () => {
-        if (this.$store.state.vizData === null) return;
+        if (this.$store.state.vizData === null) return;        
 
         var component = document.getElementById("ecalendar");
         if (component != null && this.$data.component === null) {
@@ -68,7 +80,7 @@ export default {
           Object.keys(this.$store.state.vizData[sK].data).forEach((d) => {
             this.$store.state.vizData[sK].data[d].dates.forEach((i) => {
               if (i in tmp) tmp[i] += parseFloat(this.$store.state.vizData[sK].data[d].value);
-              else tmp[i] = parseFloat(this.$store.state.vizData[sK].data[d].value)
+              else tmp[i] = parseFloat(this.$store.state.vizData[sK].data[d].value);
             });
           });
         });
@@ -78,17 +90,28 @@ export default {
           res.push([k, tmp[k]]);
         });
 
-        var unit = this.$store.state.vizOptionRelative
-          ? " (pro Mio. Token)"
-          : " (Token)";
+        var unit = this.$store.state.vizOptionRelative ? this.$t("lbl_unit_tokenPPM") : this.$t("lbl_unit_token");
+
+        var calendars = [];
+        var top = 35;
+        this.$store.state.owid.AvailableYears.forEach((year) => {
+          calendars.push({
+            range: year,
+            cellSize: ["auto", 20],
+            dayLabel: dayMap,
+            monthLabel: monthMap,
+            top: top,
+          });
+          top += 175;
+        });
 
         let myCalendarOption = {
           toolbox: {
             show: true,
             feature: {
               saveAsImage: {
-                title: "Speichern \xa0 \xa0 \xa0 \xa0 \xa0",
-                name: "OWIDplusLIVE",
+                title: this.$t("lbl_save") + " \xa0 \xa0 \xa0 \xa0 \xa0",
+                name: this.$t("lbl_export_fileName"),
               },
             },
           },
@@ -102,6 +125,7 @@ export default {
                   .toFixed(3)
                   .replace(",", "'")
                   .replace(".", ",") +
+                " " +
                 unit
               );
             },
@@ -117,21 +141,7 @@ export default {
               color: ["#1feaea", "#ffd200", "#f72047"],
             },
           },
-          calendar: [
-            {
-              range: "2020",
-              cellSize: ["auto", 20],
-              dayLabel: dayMap,
-              monthLabel: monthMap,
-            },
-            {
-              range: "2021",
-              cellSize: ["auto", 20],
-              dayLabel: dayMap,
-              monthLabel: monthMap,
-              top: 250,
-            },
-          ],
+          calendar: calendars,
           series: [
             {
               type: "heatmap",

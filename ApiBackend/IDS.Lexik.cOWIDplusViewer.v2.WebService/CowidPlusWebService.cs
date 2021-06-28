@@ -89,25 +89,7 @@ namespace IDS.Lexik.cOWIDplusViewer.v2.WebService
 
         Database.SetupElasticIndex(ref _es);
 
-        var rwRocksDbs = _dbs.ToDictionary(x => x.Key, x => new EasyRocksDb(x.Value.Path, true));
-        Database.InsertFromWebRequest(req.Data, new DateTime(req.Year, req.Month, req.Day), _es, rwRocksDbs);
-        foreach (var db in rwRocksDbs)
-          db.Value.Dispose();
-
-        try
-        {
-          Process.Start(new ProcessStartInfo
-          {
-            FileName = "pm2",
-            Arguments = "restart owidpluslive",
-            CreateNoWindow = true, 
-            UseShellExecute = true
-          });
-        }
-        catch
-        {
-          //ignore
-        }
+        Database.InsertFromWebRequest(req.Data, new DateTime(req.Year, req.Month, req.Day), _es, _dbs);
 
         return arg.Response.Send(HttpStatusCode.OK);
       }
@@ -532,13 +514,16 @@ namespace IDS.Lexik.cOWIDplusViewer.v2.WebService
       {
         try
         {
-          _dbs.Add((byte)(i + 1), new EasyRocksDb(Path.Combine(_dbPath, $"N{(i + 1):D2}"), false));
+          var lockFile = Path.Combine(_dbPath, $"N{(i + 1):D2}") + "/LOCK";
+          if(File.Exists(lockFile))
+            File.Delete(lockFile);
+
+          _dbs.Add((byte)(i + 1), new EasyRocksDb(Path.Combine(_dbPath, $"N{(i + 1):D2}"), true));
         }
-        catch
+        catch (Exception ex)
         {
-          var tmp = new EasyRocksDb(Path.Combine(_dbPath, $"N{(i + 1):D2}"), true);
-          tmp.Dispose();
-          _dbs.Add((byte)(i + 1), new EasyRocksDb(Path.Combine(_dbPath, $"N{(i + 1):D2}"), false));
+          Console.WriteLine(ex.Message);
+          Console.WriteLine(ex.StackTrace);
         }
       }
     }
